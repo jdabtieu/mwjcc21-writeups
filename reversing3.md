@@ -1,5 +1,5 @@
 # CTFplatform
-![](https://img.shields.io/badge/category-rev-blue)
+![](https://img.shields.io/badge/category-reversing-blue)
 
 ## Description
 **jdabtieu**’s boss asked him to write some pseudocode for some random program. Since **jdabtieu**’s primary programming language is not C, nor Java, or C++, or even Python, but Assembly, he decided to write pseudo-assembly-code. After all, pseudocode is just code but more english, right?
