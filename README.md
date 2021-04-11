@@ -6,7 +6,7 @@ Welcome to mwjcc21-writeups! Click on any of the below links to view a problem's
 |`The Human Factor`|[crypto2.md](crypto2.md)|
 |`Kevin Needs Help, Again`|TBA|
 |`=~('(?{'.('/-)@_{'^'__@.+[').'"'.('@*-:[-}'^'-__^>__').',$/})')`|[crypto4.md](crypto4.md)|
-|`Remarks`|[dorensics1.md](forensics1.md)|
+|`Remarks`|[forensics1.md](forensics1.md)|
 |`Rabbit Hole`|TBA|
 |`Intercepted Traffic`|[forensics3.md](forensics3.md)|
 |`Forgetful`|[forensics4.md](forensics4.md)|
