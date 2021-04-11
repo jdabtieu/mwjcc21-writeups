@@ -1,0 +1,135 @@
+# Intercepted Traffic
+![](https://img.shields.io/badge/category-forensics-blue)
+
+## Description
+
+We have intercepted the traffic of the hacker who infiltrated C. T.  Factory's network. We have discovered that he stole a flag file and sent it to his secure file storage site. Luckily we have captured some of  his packets which should help us retrieve the flag file.
+
+[forensics3.zip](https://drive.google.com/drive/folders/1eKV2WG1MR48uCN-uw6tAp6vYV6iZHcde?usp=sharing)
+
+## Solution
+
+In the captured packets there are streams going between the source `192.168.1.103` and three destinations. These destinations are `1.1.1.1` (CloudFlare DNS Server), `40.89.244.232` (DuckDuckGo), and `192.168.1.121`. The problem description states that the flag is stored in a file storage site so we can filter out all the packets that do not go to or from `192.168.1.121` as the other two destinations are not file storage. This is a really simple filter and leaves us with just plaintext HTTP requests to the storage server.
+
+```
+ip.addr == 192.168.1.121
+```
+
+By following the individual HTTP streams we can figure out what requests were made with the server. This can be done by right clicking a packet > Follow > HTTP Stream or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>.
+
+### Streams
+
+#### TCP Stream 1-2
+
+GET request to `http://192.168.1.121:4444/` that returns the login page
+
+#### TCP Stream 3-4
+
+Incorrect logins
+
+#### TCP Stream 6
+
+Login with username `admin` and password `SuperS3CUR3_passw0rd`. Redirected to `http://192.168.1.121:4444/success/`
+
+#### TCP Stream 7
+
+The file upload page at `/success`. The page also instructs users to encrypt their files using a PGP public key found at `/static/pub.asc`
+
+#### TCP Stream 8
+
+The PGP public key at `/static/pub.asc`
+
+#### TCP Stream 10-12
+
+The file upload page
+
+#### TCP Stream 13-14
+
+PGP encrypted file being uploaded to the server
+
+```pgp
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.76
+Comment: https://keybase.io/crypto
+
+wYwDWr6JFYx9BbIBBACdfgQaSoGKkcHhQkNgsOMld1CvH8oxT8htg1Ak34MAeOrI
+V17njNKrAoVWMgtUrZoaJXrwA8qsPn2cNMgVS3NQ9zFpfOtZhhrPT6CJsAROdWvX
+Ec+3H+11DI4tmbr5jbZG41X3Jjld+92NIJhH3hZfYXcO2NXPAXEMZxn+U7tZ89Jf
+AY9h0ZWnKNzCckMbsDp0xSJQtf1UxvVt7aB6MfKhkYaUdB6rsaHQNmyviRnctgTz
+zAfOgmX2Q6/a3M6mLbw1Huck5MZyMQf1g7bbU65uucMzpRFlwqrGcl7xcnn73nA=
+=hZxk
+-----END PGP MESSAGE-----
+```
+
+#### TCP Stream 16-17
+
+The download page listing files including the uploaded `encrypted.txt` from stream 13 as well as the link to a PGP private key at `/static/sec.asc` with the password `password`
+
+#### TCP Stream 18
+
+The PGP private key at `/static/sec.asc`
+
+```pgp
+-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: Keybase OpenPGP v2.0.76
+Comment: https://keybase.io/crypto
+
+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
+fQM=
+=K09I
+-----END PGP PRIVATE KEY BLOCK-----
+```
+
+### Decrypting the Flag
+
+The `encrypted.txt` file can be decrypted with the given information using GNUPG, CyberChef, or any other PGP tool. Here is an example on [CyberChef](https://gchq.github.io/CyberChef/#recipe=PGP_Decrypt('-----BEGIN%20PGP%20PRIVATE%20KEY%20BLOCK-----%5CnVersion:%20Keybase%20OpenPGP%20v2.0.76%5CnComment:%20https://keybase.io/crypto%5Cn%5CnxcFGBF/dHzABBAC/mBOT1DywwqpOd8iMowodpA4br8XH5zksdqGzyhVaC2T1U5dR%5CnEmsGgPKsNLEioQAO9Yr7dcI2OnfYjZujF2HIC6TH/oT5/wxpbEit7sMQ8SjuKunT%5CneZAI0NwdAQEnUeI47CyuiPhTFedT2Ok8fBL0Qqnh8jebf2a4U8uPQ0XY6wARAQAB%5Cn/gkDCObvj%2BGh6SapYJ9koER9WXXoj0Z1vNXxrs2sp4fMViyrxTIkniHmoQeRuNOj%5Cn4oeFV2KHo%2BqvUdqzqf4KvnoFfIk4b8gMXwXByahg6ep%2BNMm9X8pilshpkqOuBHP8%5CnadRgtJD30gkXNkU7wMS5NPdf8cuN18XSc5dgot1qfmWb0WT1jKsJoAUNk/gb2TCX%5CnNorvdp00wWJlAZcLFnTFShZMFUFcD%2BD0RcdGlzEyYB2Muj4yj8iOJG4H56eKx2E5%5CnQhP0uBr3E7olW2%2BwCdRsyfoxWvGNqtXe%2BWf0a0xEdw1H2Kk9ey5Lpm8c8o/pSR0G%5CnqhAK1E%2BSGEnRgMlrBTm2uhELDUirh3qICl0oR%2BFR4/kSaThi4Wvol%2BHaEzmFZkCO%5CnzwsLTd8bPYiDA46K6kWL%2BwP5FCc7JC8eVm3o/2c7zUXKCGltIGWe8f3kSk7gEqDZ%5Cnv7tl%2B8roOnqsbiPb0kYCcvDxfqSmoyk5uJ6q%2B0zEVshYbv6SOjdmhOzNLVN1cGVy%5CnIFNlY3VyZSBGaWxlIFN0b3JhZ2UgPGVtYWlsQGRvbWFpbi5oZXJlPsK6BBMBCgAk%5CnBQJf3R8wAhsvAwsJBwMVCggCHgECF4ADFgIBAhkBBQkAAAAAAAoJEHlrtpHS7PWM%5Cn4doD/0apKyXEnu/sPSzegbra2cQIoUJT0if6MsDrlInqHWj%2B6uIWH/e9PVa%2BUcm1%5CnDYd2bMxdSF1Ve2jnuI97phWmJMV/jJjmaBR8nHC/MWOJ2vvcZ8HPMfghea6k0POi%5Cnq4RiynsDS8/XfxqUNLZChon7zB4AE3jFAdKSI6Jr6PFViaoYx8FGBF/dHzABBADL%5CnNBxTXR4vqVf%2BoamZ01HKes5/ODGC8rXyPgXUIWr4Oo8L%2B0e1SZvYv2cNWFSNdDrK%5CnIuHDBKXDsObrcRCvSe7pKhBLbCdJ%2BfBXFN4w8iFcTclESsjfJFahpvk/qij8rz79%5CnaUs%2BhJbBT/8vUkvWYkkhjbyF%2BUe9hF86qHzM7k0g1QARAQAB/gkDCKyAHcJigwqA%5CnYJJGXNyhu1gnQX%2BL72vTMjTSXGhqNAXJEioMJquKDLuiE5K4L%2BpLi1rCu/P6AH4e%5Cnc1njytU6nKw2N3WrxXS4ACH95Gf0QksYuSxxFqf37qUFRoK16qX9R2XT35f8EM1J%5CnWTrDCJ4FtmBTGKq%2BqADGwfQ6p4ZqBxrZSlAN0ZodvQTqO%2BAq7s2OZrOMzVj3AOuo%5CnGlTxdm7SfYl20omKJFLYrEMOBreDieeyHG%2Biz0xTCuG6UYoaDdsgx8qIdzY08ZMS%5CnTqcvlLb/JRM9E0gyrohbFDqDpvgBIMOS6C5Xewlx1zWF7U7ZOwkL43/FuBgePA%2B0%5CnbTGvsjEGgXzv2f4CD447j1mMwzL3LXlJCLnpmXL8Ff4KPuQhU3D9HG6TIDSRXf/t%5Cn7O9oLhVaL42bGDT4ON7Cl4eK%2BYz0X1RFK0x52RgMEtb3cpqCva5eOIORh8SR86KH%5CnIBB5F/jVAsSRkSLy8Y6ZSetONe2o5wtfotf9QlLCwIMEGAEKAA8FAl/dHzAFCQAA%5CnAAACGy4AqAkQeWu2kdLs9YydIAQZAQoABgUCX90fMAAKCRAyon0haiRgiFixBACM%5Cn%2BTzewgILzjxnKbLnb16gtd1J7VIMCRKdjQzwDEeNgZIqoe%2BUzZLOaceEF8ZTsUzO%5Cn4XwHBcyRe4oOCAyajcDJJnTXcSU05pqlZ/7i0v%2BemMtv35CXQahpk4jCthIWXSrv%5CnqSVqGl79L5gSRnTnKNVxhchvfpyYfTdA0GK2O9GaZi1cBACXH/Xn/AMSpdVBBpK%2B%5CnlDDtUf892wdK8kP1qmp0IshMCFrgviRDTg9H%2Bzf0bbiJ2Y0JgkZv6ydt2UUYeqSc%5CnImo1qr7gqVIAMkLpOTxC3rTsoJaAnQWthxB9WoJGqkYq4beeBLaR0Na9AgoEIGrm%5Cn3itls8TFgK1xc8QCmyV7QEnhGMfBRgRf3R8wAQQA0CPF4QxcyaWnm5yzYMs5y/9C%5CnhqiziqtcHdU0wFeN6FKX7w30fEiWhlh99ZsD1NzJ0bwX3aUWhDsdhpTCp3gsGnfR%5Cn2sA688/DbDFFGcG8AQYeGo5wHg9b5MhDXtp8FfUX4SCuuX52c0374llAF7jkH5jt%5CnXrc6Hp5aG2ZYEn4unRMAEQEAAf4JAwiG4iahxpXIzGDFZ6UmRNQqh/HVdyY9hQDm%5Cnt7axrf%2B40VSy8CRmB7TPptaGWC7fwfZs5SKGZTn%2B4McMcWrSn/U9%2Bw7k3NVjKbDt%5CnJF6zzoYQRxW0GBzUPX95TWRy0kL/ZzmRNwt7fpTyfa03Pvhs%2BTg6RoroHKZoGx6i%5CnmwZwKhp3LREdXTN2RB1moxe7PTFUMbfNdmSYoQOkWWVQOpoqltFWHzqcz5TryfkX%5Cn96SPgAPXHpZiQjhGioRSWmaUmrOP%2BlFnMAv1fjth8uCPM6MriBkFWsXxfZt9aYbh%5CnafRM%2B2rejdN3y2XwDrRZm/VuHPVErH9MO2k1baFVTSJk/Xv8UrVlhqQoAj5ZlbEJ%5CndPxFEVdaRD9RecucR3nxdeVrjimX0tKeOa4gNqxbidetr0bVn%2BAM2fbZVwIx8Tp1%5CnrYWVFvElpDu%2BtBVtRRP9oHvPbkfrDEz5gj9tWaj%2B4dnNeLfsbO8iyH2edryMlaiM%5CnsInXeb69iuw2FE9JwsCDBBgBCgAPBQJf3R8wBQkAAAAAAhsuAKgJEHlrtpHS7PWM%5CnnSAEGQEKAAYFAl/dHzAACgkQWr6JFYx9BbJQPwP/X2USLgpmhxsEmsoDykvqhf0h%5Cn3YiuCHH5LR87quZ%2Bg0uxQ0mRbFUfe9w5ZjzlTNgo6XxpWtepVsOHafu2eDq28mpS%5Cn24hYuT6Kf7hxvc34q0ekE4f4bpdh0AlQsjnL2ebIuMMX6j1/v3Qndg9/lgu3UttE%5Cn1z3Xz8d2sRl7LXp5JUBp1QP/WNnP783Dj44CCYGLeAxNXcY9WFa0o5HWu5dNtdf5%5CnUUrjWMC%2BpP9BLKSeOk/l1aTwwYWgLIQpFK7cdO2FuAu3NFxzSo3OA7yBZIW1hZY0%5CnQivvZNp1Tb0wDDGqaiBpG66IVz0bTATStQg1Y8dl3oBJWV7PHs3eir9wfgZ65FnH%5CnfQM%3D%5Cn%3DK09I%5Cn-----END%20PGP%20PRIVATE%20KEY%20BLOCK-----','password')&input=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tClZlcnNpb246IEtleWJhc2UgT3BlblBHUCB2Mi4wLjc2CkNvbW1lbnQ6IGh0dHBzOi8va2V5YmFzZS5pby9jcnlwdG8KCndZd0RXcjZKRll4OUJiSUJCQUNkZmdRYVNvR0trY0hoUWtOZ3NPTWxkMUN2SDhveFQ4aHRnMUFrMzRNQWVPckkKVjE3bmpOS3JBb1ZXTWd0VXJab2FKWHJ3QThxc1BuMmNOTWdWUzNOUTl6RnBmT3RaaGhyUFQ2Q0pzQVJPZFd2WApFYyszSCsxMURJNHRtYnI1amJaRzQxWDNKamxkKzkyTklKaEgzaFpmWVhjTzJOWFBBWEVNWnhuK1U3dFo4OUpmCkFZOWgwWlduS056Q2NrTWJzRHAweFNKUXRmMVV4dlZ0N2FCNk1mS2hrWWFVZEI2cnNhSFFObXl2aVJuY3RnVHoKekFmT2dtWDJRNi9hM002bUxidzFIdWNrNU1aeU1RZjFnN2JiVTY1dXVjTXpwUkZsd3FyR2NsN3hjbm43M25BPQo9aFp4awotLS0tLUVORCBQR1AgTUVTU0FHRS0tLS0t). After decryption we find that the flag is `CTF{p8ckets_hav3_b33n_c0mpr0m1z3d}`
