@@ -4,7 +4,7 @@ Welcome to mwjcc21-writeups! Click on any of the below links to view a problem's
 |----------------------|------------------|
 |`Vigenere`|TBA|
 |`The Human Factor`|[crypto2.md](crypto2.md)|
-|`Kevin Needs Help, Again`|TBA|
+|`Kevin Needs Help, Again`|[crypto3.md](crypto3.md)|
 |`=~('(?{'.('/-)@_{'^'__@.+[').'"'.('@*-:[-}'^'-__^>__').',$/})')`|[crypto4.md](crypto4.md)|
 |`Remarks`|[forensics1.md](forensics1.md)|
 |`Rabbit Hole`|TBA|
@@ -14,8 +14,8 @@ Welcome to mwjcc21-writeups! Click on any of the below links to view a problem's
 |`Mine Eyes Have Seen`|[general2.md](general2.md)|
 |`Not to Play`|[general3.md](general3.md)|
 |`Eyes Wide Open`|[general4.md](general4.md)|
-|`Magic Trick`|TBA|
-|`LibraryC`|TBA|
+|`Magic Trick`|[pwn1.md](pwn1.md)|
+|`LibraryC`|[pwn2.md](pwn2.md)|
 |`CTFplatform`|[pwn3.md](pwn3.md)|
 |`Disgruntled Employee`|TBA|
 |`Disgruntled Employee (HARD)`|TBA|
