@@ -17,8 +17,8 @@ Welcome to mwjcc21-writeups! Click on any of the below links to view a problem's
 |`Magic Trick`|[pwn1.md](pwn1.md)|
 |`LibraryC`|[pwn2.md](pwn2.md)|
 |`CTFplatform`|[pwn3.md](pwn3.md)|
-|`Disgruntled Employee`|TBA|
-|`Disgruntled Employee (HARD)`|TBA|
+|`Disgruntled Employee`|[pwn4.md](pwn4.md)|
+|`Disgruntled Employee (HARD)`|[pwn4.md](pwn4.md)|
 |`Modified Code`|[reversing1.md](reversing1.md)|
 |`Unknown Input`|[reversing2.md](reversing2.md)|
 |`Pseudocode`|[reversing3.md](reversing3.md)|
