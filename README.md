@@ -2,12 +2,12 @@ Welcome to mwjcc21-writeups! Click on any of the below links to view a problem's
 
 |Problem Name          |Link              |
 |----------------------|------------------|
-|`Vigenere`|TBA|
+|`Vigenere`|[crypto1.md](crypto1.md)|
 |`The Human Factor`|[crypto2.md](crypto2.md)|
 |`Kevin Needs Help, Again`|[crypto3.md](crypto3.md)|
 |`=~('(?{'.('/-)@_{'^'__@.+[').'"'.('@*-:[-}'^'-__^>__').',$/})')`|[crypto4.md](crypto4.md)|
 |`Remarks`|[forensics1.md](forensics1.md)|
-|`Rabbit Hole`|TBA|
+|`Rabbit Hole`|[forensics2.md](forensics2.md)|
 |`Intercepted Traffic`|[forensics3.md](forensics3.md)|
 |`Forgetful`|[forensics4.md](forensics4.md)|
 |`Reading Comprehension`|[general1.md](general1.md)|
@@ -24,6 +24,6 @@ Welcome to mwjcc21-writeups! Click on any of the below links to view a problem's
 |`Pseudocode`|[reversing3.md](reversing3.md)|
 |`Bad Bunny`|[reversing4.md](reversing4.md)|
 |`Foogle`|[web1.md](web1.md)|
-|`Hidden In Plain Sight`|TBA|
+|`Hidden In Plain Sight`|[web2.md](web2.md)|
 |`The Cookie Jar`|[web3.md](web3.md)|
 |`Senpai`|TBA|
