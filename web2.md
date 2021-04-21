@@ -1,5 +1,5 @@
 # Hidden In Plain Sight
-![](https://img.shields.io/badge/category-crypto-blue)
+![](https://img.shields.io/badge/category-web-blue)
 
 ## Description
 You don't need to look past this page; the flag is right here! O well, at least the first step is...
